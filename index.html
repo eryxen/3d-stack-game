@@ -39,7 +39,7 @@
     let moveSpeed = 0.02;
     let score = 0, combo = 0;
     let direction = 'x';
-    let lastDropTime = 0;  // 防止移动端触发触摸和点击双重触发
+    // 防止移动端触发触摸和点击双重触发
     let cameraHeightOffset = 0;
 
     document.getElementById('startBtn').onclick = () => {
@@ -77,8 +77,11 @@
       // Event listeners
       window.addEventListener('resize', onResize);
       window.addEventListener('keydown', onKey);
-      renderer.domElement.addEventListener('click', drop);
-      renderer.domElement.addEventListener('touchstart', drop);
+      if ('ontouchstart' in window) {
+        renderer.domElement.addEventListener('touchstart', drop);
+      } else {
+        renderer.domElement.addEventListener('click', drop);
+      }
       document.getElementById('restartBtn').onclick = () => {
         document.getElementById('overlay').style.display = 'none';
         score = 0; combo = 0; updateHUD(); init(); animate();
