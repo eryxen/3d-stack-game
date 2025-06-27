@@ -169,11 +169,11 @@
     function onKey(e) { if (e.code === 'Space') drop(); }
     function updateHUD() { document.getElementById('hud').textContent = `Score: ${score} | Combo: ${combo}`; }
     function gameOver() {
-      // Convert score to coins 1:1
-      coins = score;
+      // Accumulate coins: add current score
+      coins += score;
       document.getElementById('coinCount').textContent = 'Coins: ' + coins;
       document.getElementById('overlay').style.display = 'flex';
     }
-  </script>
+</script>
 </body>
 </html>
