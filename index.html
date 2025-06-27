@@ -49,7 +49,6 @@
     };
 
     function init() {
-      // Clear previous blocks
       if (renderer) {
         blocks.forEach(b => scene.remove(b.mesh));
         blocks.length = 0;
@@ -66,15 +65,13 @@
       camera = new THREE.PerspectiveCamera(50, window.innerWidth/window.innerHeight, 0.1, 100);
       cameraHeightOffset = 0;
       updateCameraPosition();
-      // Lighting
       scene.add(new THREE.AmbientLight(0xffffff, 0.7));
       const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
       dirLight.position.set(5, 10, 7.5);
       scene.add(dirLight);
-            // First block: #0d1b2a, opacity 0.7
-            // First block: #0d1b2a, opacity 0.7
+      // Base block
       addBlock(3, 0.5, 3, 0, 0.25, 0, 0x0d1b2a, 0.7);
-      // Create first moving block
+      // First moving block
       nextBlock();
       // Event listeners
       window.addEventListener('resize', onResize);
@@ -89,15 +86,11 @@
 
     function addBlock(w, h, d, x, y, z, color, opacity = 1) {
       const geo = new THREE.BoxGeometry(w, h, d);
-      const mat = new THREE.MeshStandardMaterial({
-        color,
-        transparent: opacity < 1,
-        opacity
-      });
+      const mat = new THREE.MeshStandardMaterial({ color, transparent: opacity < 1, opacity });
       const mesh = new THREE.Mesh(geo, mat);
       mesh.position.set(x, y, z);
       scene.add(mesh);
-      blocks.push({ mesh, w, h, d });
+      blocks.push({ mesh, w, h, d, direction });
     }
 
     function nextBlock() {
@@ -107,9 +100,7 @@
       const offset = 4;
       const x = direction === 'x' ? -offset : 0;
       const z = direction === 'z' ? -offset : 0;
-      // Alternate only for moving blocks: first moving index 0
       const moveIndex = blocks.length - 2;
-      // moveIndex 0 -> teal (#00ccaa), 1 -> dark (#0d1b2a), then alternate
       const color = (moveIndex % 2 === 0) ? 0x00ccaa : 0x0d1b2a;
       addBlock(prev.w, prev.h, prev.d, x, y, z, color, 1);
     }
@@ -132,9 +123,16 @@
     }
 
     function drop() {
-      const top = blocks[blocks.length - 1];
-      const prev = blocks[blocks.length - 2];
+      const topIndex = blocks.length - 1;
+      const top = blocks[topIndex];
+      const prev = blocks[topIndex - 1];
       if (!prev || !top) return;
+      // First moving block always aligns perfectly
+      if (blocks.length === 2) {
+        top.mesh.position[direction] = prev.mesh.position[direction];
+        score++; combo++; updateHUD(); nextBlock();
+        return;
+      }
       const delta = top.mesh.position[direction] - prev.mesh.position[direction];
       const size = direction === 'x' ? prev.w : prev.d;
       const overlap = size - Math.abs(delta);
