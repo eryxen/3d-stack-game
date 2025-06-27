@@ -39,6 +39,7 @@
     let moveSpeed = 0.02;
     let score = 0, combo = 0;
     let direction = 'x';
+    let lastDropTime = 0;  // 防止移动端触发触摸和点击双重触发
     let cameraHeightOffset = 0;
 
     document.getElementById('startBtn').onclick = () => {
