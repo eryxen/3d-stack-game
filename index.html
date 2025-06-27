@@ -31,6 +31,7 @@
   </div>
   <div id="overlay" style="display:none;">
     <h1>Game Over</h1>
+    <p id="coinCount">Coins: 0</p>
     <button id="restartBtn">Restart</button>
   </div>
   <script>
@@ -39,6 +40,7 @@
     let moveSpeed = 0.02;
     let score = 0, combo = 0;
     let direction = 'x';
+    let coins = 0;  // Earned coins accumulated from score
     // 防止移动端触发触摸和点击双重触发
     let cameraHeightOffset = 0;
 
@@ -166,7 +168,12 @@
 
     function onKey(e) { if (e.code === 'Space') drop(); }
     function updateHUD() { document.getElementById('hud').textContent = `Score: ${score} | Combo: ${combo}`; }
-    function gameOver() { document.getElementById('overlay').style.display = 'flex'; }
+    function gameOver() {
+      // Convert score to coins 1:1
+      coins = score;
+      document.getElementById('coinCount').textContent = 'Coins: ' + coins;
+      document.getElementById('overlay').style.display = 'flex';
+    }
   </script>
 </body>
 </html>
